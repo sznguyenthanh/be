@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const weatherSchema = require("./schema/weather");
 const controlSchema = require("./schema/control");
+const customerSchema = require("./schema/user");
 
 const router_weather = Router();
 
@@ -50,4 +51,25 @@ router_weather.get("/change-state", async (req, res) => {
   }
 });
 
+router_weather.post("/add-user", async (req, res) => {
+  const { username, password } = req.body;
+  console.log(req.body);
+  await new customerSchema({
+    username,
+    password,
+    isAdmin: true,
+  }).save();
+
+  res.status(200).send("add new user success");
+});
+
+router_weather.get("/check-user/:username", async (req, res) => {
+  const { username } = req.params;
+
+  const user = await customerSchema.find({
+    username,
+  });
+
+  res.json(user);
+});
 module.exports = router_weather;
